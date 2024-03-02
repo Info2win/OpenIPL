@@ -9,11 +9,11 @@
 class Png : public ipl::Image
 {
 public:
-    Png(const std::string &pAbsolutePath);
+    Png(const char* pAbsolutePath);
     ~Png();
     // Image interface
-protected:
-    bool write(const std::string &pAbsoluteFolderPath, const std::string& pFileName) override;
+private:
+    bool write(const char* pAbsoluteFolderPath, const char* pFileName) override;
 };
 
 #endif // PNG_H

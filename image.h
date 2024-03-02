@@ -1,10 +1,15 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-
+// OpenIPL headers
 #include "OpenIPL_global.h"
+#include "pixel.h"
 
+// STL headers
+#include <vector>
 #include <string>
+#include <thread>
+#include <mutex>
 
 namespace ipl{
 
@@ -19,21 +24,38 @@ class OPENIPL_API Image
 public:
     /**
      * @brief Reads an image from the disk to memory.
+     * This a thread safe method.
      * @param pAbsolutePath is the absoulte path to the image.
-     * @return Returns an pointer to Image object.
+     * @return Returns a pointer to Image object if successfully read, otherwise returns nullptr.
      */
-    static Image* read(const std::string& pAbsolutePath);
+    static Image* read(const char* pAbsolutePath);
 
     /**
      * @brief Writes an image from the memory to disk.
+     * This a thread safe method.
      * @param pAbsoluteFolderPath is the absolute path to the folder where you want to write your image.
      * @param pFileName is the name of the image that is going to be written.
      * @return Returns true if the image is successfully written, otherwise false.
      */
-    virtual bool write(const std::string& pAbsoluteFolderPath, const std::string& pFileName) = 0;
+    virtual bool write(const char* pAbsoluteFolderPath, const char* pFileName) = 0;
+
+    //destructor
+    virtual ~Image();   
+
 protected:
-    Image();
-    virtual ~Image();
+    // consturctors and destructors
+    Image(const char* pAbsolutePath);
+    //member variables
+    int mWidth;
+    int mHeight;
+    int mChannelCount;
+    std::vector<std::vector<Pixel*>> mImageMatrix;
+    unsigned char* toUnsignedCharArray();
+private:
+    void setImageMatrix(unsigned char* pImage,const int& pStartRow, const int& pEndRow, std::mutex& pMutex);
+    void setUnsignedCharArray(unsigned char* pResult,const int& pStartRow, const int& pEndRow, std::mutex& pMutex);
+    std::mutex mMutex;
+
 };
 
 }

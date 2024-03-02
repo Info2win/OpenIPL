@@ -6,12 +6,12 @@
 class Jpeg : public ipl::Image
 {
 public:
-    Jpeg(const std::string &pAbsolutePath);
+    Jpeg(const char* pAbsolutePath);
     ~Jpeg();
 
     // Image interface
 protected:
-    bool write(const std::string &pAbsoluteFolderPath, const std::string& pFileName) override;
+    bool write(const char* pAbsoluteFolderPath, const char* pFileName) override;
 };
 
 #endif // JPEG_H
