@@ -40,7 +40,15 @@ public:
     virtual bool write(const char* pAbsoluteFolderPath, const char* pFileName) = 0;
 
     //destructor
-    virtual ~Image();   
+    virtual ~Image();
+
+    /**
+     * @brief Resizes the image with bilinear interpolation
+     * @param pNewWidth
+     * @param pNewHeight
+     * @return Returns true if successful, otherwise false
+     */
+    bool resize(const int& pNewWidth, const int& pNewHeight);
 
 protected:
     // consturctors and destructors

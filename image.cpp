@@ -80,6 +80,133 @@ ipl::Image::~Image()
 }
 
 
+bool ipl::Image::resize(const int& pNewWidth, const int& pNewHeight)
+{
+    try
+    {
+        std::vector<std::vector<Pixel*>> outputMatrix(pNewHeight);
+        for(int i=0; i< pNewHeight; ++i)
+        {
+            outputMatrix.resize(pNewWidth);
+        }
+        int oldWidth = mImageMatrix[0].size();
+        int oldHeight = mImageMatrix.size();
+
+        float widthRatio = (float)(oldWidth-1) / (pNewWidth - 1);
+        float heightRatio = (float)(oldHeight -1) / (pNewHeight - 1);
+
+
+        for(int height =0; height<pNewHeight; ++height)
+        {
+            for(int width=0; width<pNewWidth; ++width)
+            {
+                // Coordinates in the original image
+                float width_src = width * widthRatio;
+                float height_src = height * heightRatio;
+
+                // Find the integer part of coordinates
+
+                int width_int = (int)width_src;
+                int height_int = (int)height_src;
+
+                // Fractional parts of the coordinates
+
+                float width_diff = width_src - width_int;
+                float height_diff = height_src - height_int;
+
+                unsigned char newRValue;
+                unsigned char newGValue;
+                unsigned char newBValue;
+                unsigned char newAValue;
+                Pixel* pixel = nullptr;
+
+                // Bilinear interpolation
+                if(height_int < mHeight -1 && width_int < mWidth -1 )
+                {
+                    if(mChannelCount >= 3)
+                    {
+
+                        newRValue =
+                                (1 - width_diff) * (1 - height_diff) * *(mImageMatrix[height_int][width_int]->getR() )+
+                                width_diff * (1 - height_diff) * *(mImageMatrix[height_int][width_int + 1]->getR() )+
+                                (1 - width_diff) * height_diff * *(mImageMatrix[height_int + 1] [width_int]->getR()) +
+                                width_diff * height_diff * *(mImageMatrix[height_int + 1] [width_int + 1]->getR());
+                        newGValue =
+                                (1 - width_diff) * (1 - height_diff) * *(mImageMatrix[height_int][width_int]->getG() )+
+                                width_diff * (1 - height_diff) * *(mImageMatrix[height_int][width_int + 1]->getG() )+
+                                (1 - width_diff) * height_diff * *(mImageMatrix[height_int + 1] [width_int]->getG()) +
+                                width_diff * height_diff * *(mImageMatrix[height_int + 1] [width_int + 1]->getG());
+                        newBValue =
+                                (1 - width_diff) * (1 - height_diff) * *(mImageMatrix[height_int][width_int]->getB() )+
+                                width_diff * (1 - height_diff) * *(mImageMatrix[height_int][width_int + 1]->getB() )+
+                                (1 - width_diff) * height_diff * *(mImageMatrix[height_int + 1] [width_int]->getB()) +
+                                width_diff * height_diff * *(mImageMatrix[height_int + 1] [width_int + 1]->getB());
+
+                        if(mChannelCount == 3) // RGB
+                        {
+                            pixel = new Rgb(newRValue,newGValue,newBValue);
+
+                        }
+                    }
+                    if(mChannelCount == 4) // RGBA
+                    {
+                        newAValue =
+                                (1 - width_diff) * (1 - height_diff) * *(mImageMatrix[height_int][width_int]->getA() )+
+                                width_diff * (1 - height_diff) * *(mImageMatrix[height_int][width_int + 1]->getA() )+
+                                (1 - width_diff) * height_diff * *(mImageMatrix[height_int + 1] [width_int]->getA()) +
+                                width_diff * height_diff * *(mImageMatrix[height_int + 1] [width_int + 1]->getA());
+                        pixel = new Rgba(newRValue,newGValue,newBValue,newAValue);
+                    }
+                    if(mChannelCount == 1)
+                    {
+                        unsigned char newGrayScaleValue =
+                                (1 - width_diff) * (1 - height_diff) * *(mImageMatrix[height_int][width_int]->getIntensity() )+
+                                width_diff * (1 - height_diff) * *(mImageMatrix[height_int][width_int + 1]->getIntensity() )+
+                                (1 - width_diff) * height_diff * *(mImageMatrix[height_int + 1] [width_int]->getIntensity() ) +
+                                width_diff * height_diff * *(mImageMatrix[height_int + 1] [width_int + 1]->getIntensity() );
+                        pixel = new GrayScale(newGrayScaleValue);
+                    }
+                    outputMatrix[height].push_back(pixel);
+                }
+                else // if right or bottom edge output pixel is same as one pixel before it
+                {
+                    if(height_int == mHeight -1 && width_int == mWidth -1)
+                    {
+                        outputMatrix[height].push_back(outputMatrix[height-1][width-1]);
+                    }
+                    else if(height_int == mHeight -1 && width_int < mWidth -1)
+                    {
+                        outputMatrix[height].push_back(outputMatrix[height-1][width]);
+                    }
+                    else if(height_int < mHeight -1 && width_int == mWidth -1)
+                    {
+                        outputMatrix[height].push_back(outputMatrix[height][width-1]);
+                    }
+                }
+
+            }
+        }
+        mImageMatrix.resize(pNewHeight);
+        for(int i=0; i< pNewHeight; ++i)
+        {
+            mImageMatrix[i].resize(pNewWidth);
+        }
+        mImageMatrix = outputMatrix;
+
+    }
+    catch (const std::exception& e)
+    {
+       std::cerr << "Exception caught: " << e.what() << std::endl;
+       return false;
+    }
+
+    mHeight = pNewHeight;
+    mWidth = pNewWidth;
+
+    return true;
+}
+
+
 void ipl::Image::setImageMatrix(unsigned char *pImage, const int &pStartRow, const int &pEndRow, std::mutex &pMutex)
 {
     pMutex.lock();
