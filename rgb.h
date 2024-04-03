@@ -11,7 +11,6 @@ public:
     unsigned char* getR()  override;
     unsigned char* getG()  override;
     unsigned char* getB()  override;
-
 private:
     unsigned char mR;
     unsigned char mG;

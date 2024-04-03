@@ -49,9 +49,11 @@ public:
      * @return Returns true if successful, otherwise false
      */
     bool resize(const int& pNewWidth, const int& pNewHeight);
+    bool toGrayScale();
+    bool toBinary(const int& pThreshold);
 
 protected:
-    // consturctors and destructors
+    // constructor
     Image(const char* pAbsolutePath);
     //member variables
     int mWidth;

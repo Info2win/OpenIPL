@@ -118,12 +118,13 @@ bool ipl::Image::resize(const int& pNewWidth, const int& pNewHeight)
                 unsigned char newGValue;
                 unsigned char newBValue;
                 unsigned char newAValue;
+                unsigned char newGrayScaleValue;
                 Pixel* pixel = nullptr;
 
                 // Bilinear interpolation
                 if(height_int < mHeight -1 && width_int < mWidth -1 )
                 {
-                    if(mChannelCount >= 3)
+                    if(mChannelCount >= 3) // RGB or RGBA
                     {
 
                         newRValue =
@@ -157,9 +158,9 @@ bool ipl::Image::resize(const int& pNewWidth, const int& pNewHeight)
                                 width_diff * height_diff * *(mImageMatrix[height_int + 1] [width_int + 1]->getA());
                         pixel = new Rgba(newRValue,newGValue,newBValue,newAValue);
                     }
-                    if(mChannelCount == 1)
+                    if(mChannelCount == 1) // GrayScale
                     {
-                        unsigned char newGrayScaleValue =
+                        newGrayScaleValue =
                                 (1 - width_diff) * (1 - height_diff) * *(mImageMatrix[height_int][width_int]->getIntensity() )+
                                 width_diff * (1 - height_diff) * *(mImageMatrix[height_int][width_int + 1]->getIntensity() )+
                                 (1 - width_diff) * height_diff * *(mImageMatrix[height_int + 1] [width_int]->getIntensity() ) +
@@ -202,6 +203,93 @@ bool ipl::Image::resize(const int& pNewWidth, const int& pNewHeight)
 
     mHeight = pNewHeight;
     mWidth = pNewWidth;
+
+    return true;
+}
+
+bool ipl::Image::toGrayScale()
+{
+    try
+    {
+       unsigned char intensity=0;
+       if(mChannelCount >= 3) // RGB or RGBA
+       {
+            for(int height=0; height<mHeight; ++height)
+            {
+                for(int width=0; width< mWidth; ++width)
+                {
+                    Pixel* currentPixel = mImageMatrix[height][width];
+                        // Convert to grayscale using luminosity method
+                    intensity = static_cast<unsigned char>(0.21f * *currentPixel->getR() +
+                                                           0.72f * *currentPixel->getG() + 0.07f * *currentPixel->getB());
+                    if(mChannelCount == 4) // RGBA
+                    {
+                        intensity *= *currentPixel->getA();
+                    }
+                    mImageMatrix[height][width] = new GrayScale(intensity);
+                    mChannelCount = 1;
+                }
+            }
+
+       }
+       if(mChannelCount == 1)// Already GrayScale
+       {
+            return true;
+       }
+    }
+    catch (const std::exception& e)
+    {
+       std::cerr << "Exception caught: " << e.what() << std::endl;
+       return false;
+    }
+
+    return true;
+
+}
+
+bool ipl::Image::toBinary(const int &pThreshold)
+{
+    try
+    {
+       unsigned char intensity=0;
+       if(mChannelCount >= 3) // RGB or RGBA
+       {
+            for(int height=0; height<mHeight; ++height)
+            {
+                for(int width=0; width< mWidth; ++width)
+                {
+                    Pixel* currentPixel = mImageMatrix[height][width];
+                        // Convert to grayscale using luminosity method
+                    intensity = static_cast<unsigned char>(0.21f * *currentPixel->getR() +
+                                                           0.72f * *currentPixel->getG() + 0.07f * *currentPixel->getB());
+                    if(mChannelCount == 4) // RGBA
+                    {
+                        intensity *= *currentPixel->getA();
+                    }
+                    if(intensity >= pThreshold)
+                    {
+                        intensity = 255;
+                    }
+                    else
+                    {
+                        intensity = 0;
+                    }
+                    mImageMatrix[height][width] = new GrayScale(intensity);
+                    mChannelCount = 1;
+                }
+            }
+
+       }
+       if(mChannelCount == 1)// Already GrayScale
+       {
+            return true;
+       }
+    }
+    catch (const std::exception& e)
+    {
+       std::cerr << "Exception caught: " << e.what() << std::endl;
+       return false;
+    }
 
     return true;
 }
