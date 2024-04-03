@@ -51,6 +51,7 @@ public:
     bool resize(const int& pNewWidth, const int& pNewHeight);
     bool toGrayScale();
     bool toBinary(const int& pThreshold);
+    bool crop(const int& pStartHeight, const int& pEndHight, const int& pStartWidth, const int& pEndWidth);
 
 protected:
     // constructor

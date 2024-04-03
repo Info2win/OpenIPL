@@ -294,6 +294,42 @@ bool ipl::Image::toBinary(const int &pThreshold)
     return true;
 }
 
+bool ipl::Image::crop(const int &pStartHeight, const int &pEndHight, const int &pStartWidth, const int &pEndWidth)
+{
+    int heightLength = pEndHight - pStartHeight;
+    int widthLength = pEndWidth - pStartWidth;
+    std::vector<std::vector<Pixel*>> outputMatrix(heightLength);
+
+    try
+    {
+       int i =0;
+       for(int height=pStartHeight; height<pEndHight; ++height, ++i)
+       {
+            for(int width=pStartWidth; width < pEndWidth; ++width)
+            {
+                outputMatrix[i].push_back(mImageMatrix[height][width]);
+            }
+       }
+
+       mImageMatrix.resize(heightLength);
+       for(int i=0; i<heightLength; ++i)
+       {
+            mImageMatrix.resize(widthLength);
+       }
+       mImageMatrix = outputMatrix;
+
+    }
+    catch (const std::exception& e)
+    {
+       std::cerr << "Exception caught: " << e.what() << std::endl;
+       return false;
+    }
+
+    mHeight = heightLength;
+    mWidth = widthLength;
+    return true;
+}
+
 
 void ipl::Image::setImageMatrix(unsigned char *pImage, const int &pStartRow, const int &pEndRow, std::mutex &pMutex)
 {
