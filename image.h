@@ -43,15 +43,49 @@ public:
     virtual ~Image();
 
     /**
-     * @brief Resizes the image with bilinear interpolation
-     * @param pNewWidth
-     * @param pNewHeight
+     * @brief Resizes the image.
+     * @param pNewWidth is the new width of the image in pixels.
+     * @param pNewHeight is the new height of the image in pixels.
      * @return Returns true if successful, otherwise false
      */
     bool resize(const int& pNewWidth, const int& pNewHeight);
+
+    /**
+     * @brief Converts an image to gray scale.
+     * @return Returns true if the image is successfully convertted to gray scale, otherwise false.
+     */
     bool toGrayScale();
+
+    /**
+     * @brief Converts an image to binary.
+     * @return Returns true if the image is successfully convertted to binary, otherwise false.
+     */
     bool toBinary(const int& pThreshold);
+
+    /**
+     * @brief Crops the image
+     * @param pStartHeight is height pixel to start cropping from .
+     * @param pEndHight is height pixel to end cropping at.
+     * @param pStartWidth is width pixel to start cropping from.
+     * @param pEndWidth is width pixel to end cropping at.
+     * @return Returns true if the image is successfully cropped, otherwise false.
+     */
     bool crop(const int& pStartHeight, const int& pEndHight, const int& pStartWidth, const int& pEndWidth);
+
+    bool append(const Image* pImage, const int& pStartHeight,const int& pStartWidth);
+
+    /**
+     * @brief Getter for width of the image
+     * @return  Returns width of the image in pixels as int
+     */
+
+    int getWidth() const;
+
+    /**
+     * @brief Getter for height of the image
+     * @return  Returns height of the image in pixels as int
+     */
+    int getHeight() const;
 
 protected:
     // constructor

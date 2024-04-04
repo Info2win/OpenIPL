@@ -330,6 +330,68 @@ bool ipl::Image::crop(const int &pStartHeight, const int &pEndHight, const int &
     return true;
 }
 
+bool ipl::Image::append(const Image *pImage, const int &pStartHeight, const int &pStartWidth)
+{
+    int newHeight = pImage->getHeight() + pStartHeight;
+    int newWidth = pImage->getWidth() + pStartWidth;
+    try
+    {
+        if(newHeight < mHeight)
+        {
+           newHeight = mHeight;
+        }
+        if(newWidth < mWidth)
+        {
+            newWidth = mWidth;
+        }
+        Pixel* pixel = nullptr;
+        if(mChannelCount == 4)
+        {
+            unsigned char r,g,b,a = '0';
+            pixel = new Rgba(r,g,b,a);
+        }
+        else if (mChannelCount == 3)
+        {
+            unsigned char r,g,b = '0';
+            pixel = new Rgb(r,g,b);
+        }
+        else
+        {
+            unsigned char intensity ='0';
+            pixel = new GrayScale(intensity);
+        }
+        // resize the width of the original image according to new width, with default black pixel
+        for(int height = 0; height < mHeight; ++height)
+        {
+            mImageMatrix[height].resize(newWidth,pixel);
+        }
+        // resize the height of the original image according to new height, with default black pixel
+        for(int height = mHeight; height < newHeight; ++height)
+        {
+            mImageMatrix.resize(newHeight,std::vector<Pixel*>(newWidth,pixel));
+        }
+        //append the image
+
+        for(int height = 0; height<pImage->getHeight(); ++height)
+        {
+            for(int width = 0; width <pImage->getWidth(); ++width)
+            {
+                mImageMatrix[height+pStartHeight][width+pStartWidth] = pImage->mImageMatrix[height][width];
+            }
+        }
+    }
+    catch (const std::exception& e)
+    {
+       std::cerr << "Exception caught: " << e.what() << std::endl;
+       return false;
+    }
+
+    mHeight = newHeight;
+    mWidth = newWidth;
+
+    return true;
+}
+
 
 void ipl::Image::setImageMatrix(unsigned char *pImage, const int &pStartRow, const int &pEndRow, std::mutex &pMutex)
 {
@@ -482,3 +544,18 @@ ipl::Image *ipl::Image::read(const char* pAbsolutePath)
 
 
 
+
+
+namespace ipl {
+
+int Image::getHeight() const
+{
+    return mHeight;
+}
+
+int Image::getWidth() const
+{
+    return mWidth;
+}
+
+}
