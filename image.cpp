@@ -330,6 +330,21 @@ bool ipl::Image::crop(const int &pStartHeight, const int &pEndHight, const int &
     return true;
 }
 
+bool ipl::Image::toRed()
+{
+    return toColor('R');
+}
+
+bool ipl::Image::toBlue()
+{
+    return toColor('B');
+}
+
+bool ipl::Image::toGreen()
+{
+    return toColor('G');
+}
+
 bool ipl::Image::append(const Image *pImage, const int &pStartHeight, const int &pStartWidth)
 {
     int newHeight = pImage->getHeight() + pStartHeight;
@@ -463,6 +478,73 @@ unsigned char* ipl::Image::toUnsignedCharArray()
     }
 
     return result;
+
+}
+
+bool ipl::Image::toColor(const unsigned char& pColor)
+{
+    try
+    {
+        unsigned char tR, tG, tB, tA = '0';
+        Pixel *pixel, *currentPixel = nullptr;
+        for(int height=0; height<mHeight; ++height)
+        {
+            for(int width=0; width< mWidth; ++width)
+            {
+                currentPixel = mImageMatrix[height][width];
+                if(mChannelCount == 4)
+                {
+                    if(pColor=='R')
+                    {
+                        pixel = new Rgba(*currentPixel->getR(),tG,tB,tA);
+                    }
+                    else if(pColor == 'G')
+                    {
+                        pixel = new Rgba(tR,*currentPixel->getG(),tB,tA);
+                    }
+                    else if(pColor == 'B')
+                    {
+                        pixel = new Rgba(tR,tG,*currentPixel->getB(),tA);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
+                else if(mChannelCount ==3)
+                {
+                    if(pColor=='R')
+                    {
+                        pixel = new Rgb(*currentPixel->getR(),tG,tB);
+                    }
+                    else if(pColor == 'G')
+                    {
+                        pixel = new Rgb(tR,*currentPixel->getG(),tB);
+                    }
+                    else if(pColor == 'B')
+                    {
+                        pixel = new Rgb(tR,tG,*currentPixel->getB());
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+                mImageMatrix[height][width] = pixel;
+            }
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Exception caught: " << e.what() << std::endl;
+        return false;
+    }
+    return true;
 
 }
 

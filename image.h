@@ -72,6 +72,10 @@ public:
      */
     bool crop(const int& pStartHeight, const int& pEndHight, const int& pStartWidth, const int& pEndWidth);
 
+    bool toRed();
+    bool toBlue();
+    bool toGreen();
+
     bool append(const Image* pImage, const int& pStartHeight,const int& pStartWidth);
 
     /**
@@ -97,6 +101,7 @@ protected:
     std::vector<std::vector<Pixel*>> mImageMatrix;
     unsigned char* toUnsignedCharArray();
 private:
+    bool toColor(const unsigned char& pColor);
     void setImageMatrix(unsigned char* pImage,const int& pStartRow, const int& pEndRow, std::mutex& pMutex);
     void setUnsignedCharArray(unsigned char* pResult,const int& pStartRow, const int& pEndRow, std::mutex& pMutex);
     std::mutex mMutex;
