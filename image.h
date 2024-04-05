@@ -76,6 +76,9 @@ public:
     bool toBlue();
     bool toGreen();
 
+    bool symmetrize(Axis pAxis);
+    bool symmetrizeOnMidline(Axis pAxis);
+
     bool append(const Image* pImage, const int& pStartHeight,const int& pStartWidth);
 
     /**

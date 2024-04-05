@@ -345,6 +345,97 @@ bool ipl::Image::toGreen()
     return toColor('G');
 }
 
+bool ipl::Image::symmetrize(Axis pAxis)
+{
+    try
+    {
+        std::vector<std::vector<Pixel*>> output;
+        if(pAxis == Horizontal)
+        {
+            for(int height=mHeight-1; height>=0; --height)
+            {
+                output.push_back(mImageMatrix[height]);
+            }
+            mImageMatrix = output;
+        }
+        else if (pAxis == Vertical)
+        {
+            output.resize(mHeight);
+            for(int height=0; height<mHeight; ++height)
+            {
+                for(int width=mWidth-1; width>=0; --width)
+                {
+                   output[height].push_back(mImageMatrix[height][width]);
+                }
+            }
+            mImageMatrix = output;
+        }
+        else
+        {
+            std::cerr << "Unknown axis" << std::endl;
+            return false;
+        }
+    }
+    catch (const std::exception& e)
+    {
+       std::cerr << "Exception caught: " << e.what() << std::endl;
+       return false;
+    }
+    return true;
+}
+
+bool ipl::Image::symmetrizeOnMidline(Axis pAxis)
+{
+    try
+    {
+        std::vector<std::vector<Pixel*>> output;
+
+        if(pAxis == Horizontal)
+        {
+            for(int height=0; height < mHeight/2; ++height)
+            {
+                    output.push_back(mImageMatrix[height]);
+            }
+            for(int height=0; height < mHeight/2; ++height)
+            {
+                    output.push_back(output[(mHeight/2)-1-height]);
+            }
+            mImageMatrix = output;
+        }
+        else if (pAxis == Vertical)
+        {
+            output.resize(mHeight);
+            for(int height=0; height<mHeight; ++height)
+            {
+                for(int width = 0; width < mWidth/2; ++width)
+                {
+                        output[height].push_back(mImageMatrix[height][width]);
+                }
+            }
+            for(int height=0; height<output.size(); ++height)
+            {
+                for(int width =( mWidth/2)-1; width>=0 ; --width)
+                {
+                        output[height].push_back(output[height][width]);
+                }
+            }
+            mImageMatrix = output;
+        }
+        else
+        {
+            std::cerr << "Unknown axis" << std::endl;
+            return false;
+        }
+
+    }
+    catch (const std::exception& e)
+    {
+       std::cerr << "Exception caught: " << e.what() << std::endl;
+       return false;
+    }
+    return true;
+}
+
 bool ipl::Image::append(const Image *pImage, const int &pStartHeight, const int &pStartWidth)
 {
     int newHeight = pImage->getHeight() + pStartHeight;

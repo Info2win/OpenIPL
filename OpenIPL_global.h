@@ -15,4 +15,12 @@
 #  define OPENIPL_API Q_DECL_IMPORT
 #endif
 
+enum Axis
+{
+    Horizontal,
+    Vertical
+};
+
 #endif // OPENIPL_GLOBAL_H
+
+
