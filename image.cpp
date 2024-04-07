@@ -224,7 +224,9 @@ bool ipl::Image::toGrayScale()
                                                            0.72f * *currentPixel->getG() + 0.07f * *currentPixel->getB());
                     if(mChannelCount == 4) // RGBA
                     {
-                        intensity *= *currentPixel->getA();
+                        //set visibility of the pixel
+                        unsigned char alpha = *currentPixel->getA();
+                        intensity = intensity / 255 * alpha;
                     }
                     mImageMatrix[height][width] = new GrayScale(intensity);
                     mChannelCount = 1;
@@ -264,7 +266,9 @@ bool ipl::Image::toBinary(const int &pThreshold)
                                                            0.72f * *currentPixel->getG() + 0.07f * *currentPixel->getB());
                     if(mChannelCount == 4) // RGBA
                     {
-                        intensity *= *currentPixel->getA();
+                        //set visibility of the pixel
+                        unsigned char alpha = *currentPixel->getA();
+                        intensity = intensity / 255 * alpha;
                     }
                     if(intensity >= pThreshold)
                     {
