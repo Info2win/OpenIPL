@@ -58,6 +58,8 @@ public:
 
     /**
      * @brief Converts an image to binary.
+     * @param pThreshold is the value to decide if pixel going to be converted to black or white.
+     * If the value of the pixel is lower then pThreshold, the pixel is converted to black otherwise white.
      * @return Returns true if the image is successfully convertted to binary, otherwise false.
      */
     bool toBinary(const int& pThreshold);
@@ -72,13 +74,44 @@ public:
      */
     bool crop(const int& pStartHeight, const int& pEndHight, const int& pStartWidth, const int& pEndWidth);
 
+    /**
+     * @brief toRed sets all the pixels' color channels' value to 0, except the Red Channel.
+     * @return Returns true if successful, otherwise false.
+     */
     bool toRed();
+    /**
+     * @brief toBlue sets all the pixels' color channels' value to 0, except the Blue Channel.
+     * @return Returns true if successful, otherwise false.
+     */
     bool toBlue();
+    /**
+     * @brief toGreen sets all the pixels' color channels' value to 0, except the Green Channel.
+     * @return Returns true if successful, otherwise false.
+     */
     bool toGreen();
-
+    /**
+     * @brief symmetrize takes the symmetry of the image on the given axis.
+     * @param pAxis is the enumerator which decides to either symmetrize horizontally or vertically.
+     * @return Returns true if successfully symmetrized for the given axis, otherwise false.
+     */
     bool symmetrize(Axis pAxis);
+    /**
+     * @brief symmetrize takes the symmetry of the image on the given midline of the axis.
+     * @param pAxis is the enumerator which decides to either symmetrize on midline horizontally or vertically.
+     * @return Returns true if successfully symmetrized for the given axis' midline, otherwise false.
+     */
     bool symmetrizeOnMidline(Axis pAxis);
-
+    /**
+     * @brief append Concatenates given pImage to image.
+     * At the end, image width and height can change.
+     * If starting coordinates correspond to inside of the current image, the original image is overwritten with the given image.
+     * If starting coordinates correspond to outside of the current image, it fills the space between original image and given image to append with default pixel value.
+     * If starting coordinates are next to original image, it just concatenates the given image to original image.
+     * @param pImage is the image to concantenate.
+     * @param pStartHeight is the height value in pixels to start appending at.
+     * @param pStartWidth is the width value in pixels to start appending at.
+     * @return Returns true if the given image is successfully appended to original image, otherwise false.
+     */
     bool append(const Image* pImage, const int& pStartHeight,const int& pStartWidth);
 
     /**
