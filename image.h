@@ -137,7 +137,7 @@ protected:
     std::vector<std::vector<Pixel*>> mImageMatrix;
     unsigned char* toUnsignedCharArray();
 private:
-    bool toColor(const unsigned char& pColor);
+    bool toColor(const Channel& pChannel);
     void setImageMatrix(unsigned char* pImage,const int& pStartRow, const int& pEndRow, std::mutex& pMutex);
     void setUnsignedCharArray(unsigned char* pResult,const int& pStartRow, const int& pEndRow, std::mutex& pMutex);
     std::mutex mMutex;

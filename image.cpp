@@ -336,17 +336,17 @@ bool ipl::Image::crop(const int &pStartHeight, const int &pEndHight, const int &
 
 bool ipl::Image::toRed()
 {
-    return toColor('R');
+    return toColor(Red);
 }
 
 bool ipl::Image::toBlue()
 {
-    return toColor('B');
+    return toColor(Blue);
 }
 
 bool ipl::Image::toGreen()
 {
-    return toColor('G');
+    return toColor(Green);
 }
 
 bool ipl::Image::symmetrize(Axis pAxis)
@@ -576,7 +576,7 @@ unsigned char* ipl::Image::toUnsignedCharArray()
 
 }
 
-bool ipl::Image::toColor(const unsigned char& pColor)
+bool ipl::Image::toColor(const Channel& pChannel)
 {
     try
     {
@@ -589,15 +589,15 @@ bool ipl::Image::toColor(const unsigned char& pColor)
                 currentPixel = mImageMatrix[height][width];
                 if(mChannelCount == 4)
                 {
-                    if(pColor=='R')
+                    if(pChannel == Red)
                     {
                         pixel = new Rgba(*currentPixel->getR(),tG,tB,tA);
                     }
-                    else if(pColor == 'G')
+                    else if(pChannel == Green)
                     {
                         pixel = new Rgba(tR,*currentPixel->getG(),tB,tA);
                     }
-                    else if(pColor == 'B')
+                    else if(pChannel == Blue)
                     {
                         pixel = new Rgba(tR,tG,*currentPixel->getB(),tA);
                     }
@@ -609,15 +609,15 @@ bool ipl::Image::toColor(const unsigned char& pColor)
                 }
                 else if(mChannelCount ==3)
                 {
-                    if(pColor=='R')
+                    if(pChannel == Red)
                     {
                         pixel = new Rgb(*currentPixel->getR(),tG,tB);
                     }
-                    else if(pColor == 'G')
+                    else if(pChannel == Green)
                     {
                         pixel = new Rgb(tR,*currentPixel->getG(),tB);
                     }
-                    else if(pColor == 'B')
+                    else if(pChannel == Blue)
                     {
                         pixel = new Rgb(tR,tG,*currentPixel->getB());
                     }

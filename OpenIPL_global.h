@@ -15,11 +15,23 @@
 #  define OPENIPL_API Q_DECL_IMPORT
 #endif
 
-enum Axis
+namespace ipl
 {
-    Horizontal,
-    Vertical
-};
+    enum Axis
+    {
+        Horizontal,
+        Vertical
+    };
+
+    enum Channel
+    {
+        Red,
+        Green,
+        Blue,
+        Alpha
+    };
+}
+
 
 #endif // OPENIPL_GLOBAL_H
 
