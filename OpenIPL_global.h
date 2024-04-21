@@ -28,7 +28,8 @@ namespace ipl
         Red,
         Green,
         Blue,
-        Alpha
+        Alpha,
+        RGB
     };
 }
 

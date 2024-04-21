@@ -4,6 +4,9 @@
 #include "rgba.h"
 #include "rgb.h"
 #include "grayscale.h"
+#include "charts/splinewidget.h"
+
+
 
 // STL headers
 #include <iostream>
@@ -12,6 +15,7 @@
 
 // STB headers
 #include "third_party/stb/stb_image.h"
+
 
 ipl::Image::Image(const char* pAbsolutePath)
 {
@@ -87,41 +91,11 @@ std::unordered_map<unsigned int, int> ipl::Image::getFrequency(Channel pChannel)
 
 std::unordered_map<unsigned int, int> ipl::Image::getFrequency(Channel pChannel,int pStartHeight,int pEndHeight,int pStartWidth,int pEndWidth)
 {
-    // If start and end parameters are out of range of the image, make them in range
-    if(pStartHeight > mHeight)
-    {
-        pStartHeight = mHeight;
-    }
-    if(pEndHeight > mHeight)
-    {
-        pEndHeight = mHeight;
-    }
-    if(pStartWidth > mWidth)
-    {
-        pStartWidth = mWidth;
-    }
-    if(pEndWidth > mWidth)
-    {
-        pEndWidth = mWidth;
-    }
-    if(pStartHeight < 0)
-    {
-        pStartHeight = 0;
-    }
-    if(pEndHeight < 0)
-    {
-        pEndHeight = 0;
-    }
-    if(pStartWidth < 0)
-    {
-        pStartWidth = 0;
-    }
-    if(pEndWidth < 0)
-    {
-        pEndWidth = 0;
-    }
+    fitParameters(pStartHeight,pEndHeight,pStartWidth,pEndWidth);
+
     std::unordered_map<unsigned int, int> frequency;
-    Pixel* currentPixel;
+    Pixel* currentPixel=nullptr;
+
     for(int height=pStartHeight; height< pEndHeight; ++height)
     {
         for(int width=pStartWidth; width< pEndWidth; ++width)
@@ -130,14 +104,21 @@ std::unordered_map<unsigned int, int> ipl::Image::getFrequency(Channel pChannel,
             switch (pChannel)
             {
             case Red:
+                {
                     frequency[*(currentPixel->getR())]++;
                     break;
+                }
+
             case Green:
+                {
                     frequency[*(currentPixel->getG())]++;
                     break;
+                }
             case Blue:
+                {
                     frequency[*(currentPixel->getB())]++;
                     break;
+                }
             default:
                     break;
             }
@@ -146,33 +127,53 @@ std::unordered_map<unsigned int, int> ipl::Image::getFrequency(Channel pChannel,
     return frequency;
 }
 
-bool ipl::Image::calcHistogram(const Channel &pChannel)
+bool ipl::Image::showHistogram(const Channel &pChannel)
 {
-    try
-    {
-        // maps r values' to count of occuarence in the image
-        std::unordered_map<unsigned int,int> rCount;
-        std::unordered_map<unsigned int,int> gCount;
-        std::unordered_map<unsigned int,int> bCount;
-        Pixel* currentPixel;
-        for(int height=0; height< mHeight; ++height)
-        {
-            for(int width=0; width< mWidth; ++width)
-            {
-                currentPixel = mImageMatrix[height][width];
-                rCount[(unsigned int)(*(currentPixel->getR()))]++;
-            }
-        }
-
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << "Exception caught: " << e.what() << std::endl;
-        return false;
-    }
-    return true;
-
+    return showHistogram(pChannel,0,mHeight,0,mWidth);
 }
+
+bool ipl::Image::showHistogram(const Channel& pChannel,int pStartHeight, int pEndHeight,int pStartWidth,int pEndWidth)
+{
+    fitParameters(pStartHeight,pEndHeight,pStartWidth,pEndWidth);
+    ContentWidget* contentWidget = nullptr;
+    std::unordered_map<unsigned int,int> redFrequency;
+    std::unordered_map<unsigned int,int> blueFrequency;
+    std::unordered_map<unsigned int,int> greenFrequency;
+    switch (pChannel) {
+    case RGB:
+        {
+            redFrequency = getFrequency(Red, pStartHeight,  pEndHeight, pStartWidth, pEndWidth);
+            greenFrequency = getFrequency(Green, pStartHeight,  pEndHeight, pStartWidth, pEndWidth);
+            blueFrequency = getFrequency(Blue, pStartHeight,  pEndHeight, pStartWidth, pEndWidth);
+            contentWidget = new SplineWidget(&redFrequency,&greenFrequency,&blueFrequency);
+            break;
+        }
+    case Red:
+        {
+            redFrequency = getFrequency(Red, pStartHeight,  pEndHeight, pStartWidth, pEndWidth);
+            contentWidget = new SplineWidget(&redFrequency);
+                //new BarWidget(&redFrequency);
+            break;
+        }
+    case Blue:
+        {
+            blueFrequency = getFrequency(Blue, pStartHeight,  pEndHeight, pStartWidth, pEndWidth);
+            contentWidget = new SplineWidget(nullptr,&blueFrequency);
+            break;
+        }
+    case Green:
+        {
+            greenFrequency = getFrequency(Green, pStartHeight,  pEndHeight, pStartWidth, pEndWidth);
+            contentWidget = new SplineWidget(nullptr,nullptr,&greenFrequency);
+            break;
+        }
+    default:
+        break;
+    }
+    contentWidget->show();
+    return true;
+}
+
 
 
 bool ipl::Image::resize(const int& pNewWidth, const int& pNewHeight)
@@ -782,6 +783,43 @@ void ipl::Image::setUnsignedCharArray(unsigned char* pResult, const int &pStartR
     }
 
     pMutex.unlock();
+}
+
+void ipl::Image::fitParameters(int &pStartHeight, int &pEndHeight, int &pStartWidth, int &pEndWidth)
+{
+    // If start and end parameters are out of range of the image, make them in range
+    if(pStartHeight > mHeight)
+    {
+        pStartHeight = mHeight;
+    }
+    if(pEndHeight > mHeight)
+    {
+        pEndHeight = mHeight;
+    }
+    if(pStartWidth > mWidth)
+    {
+        pStartWidth = mWidth;
+    }
+    if(pEndWidth > mWidth)
+    {
+        pEndWidth = mWidth;
+    }
+    if(pStartHeight < 0)
+    {
+        pStartHeight = 0;
+    }
+    if(pEndHeight < 0)
+    {
+        pEndHeight = 0;
+    }
+    if(pStartWidth < 0)
+    {
+        pStartWidth = 0;
+    }
+    if(pEndWidth < 0)
+    {
+        pEndWidth = 0;
+    }
 }
 
 ipl::Image *ipl::Image::read(const char* pAbsolutePath)

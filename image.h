@@ -3,6 +3,7 @@
 
 // OpenIPL headers
 #include "OpenIPL_global.h"
+#include "contentwidget.h"
 #include "pixel.h"
 
 // STL headers
@@ -68,8 +69,8 @@ public:
      */
     std::unordered_map<unsigned int,int> getFrequency(Channel pChannel,int pStartHeight,int pEndHeight,int pStartWidth,int pEndWidth);
 
-    bool calcHistogram(const Channel& pChannel);
-    bool calcHistogram(const Channel& pChannel, const int& pStartWidth, const int& pEndWidth, const int& pStartHeight, const int& pEndHeight);
+    bool showHistogram(const Channel& pChannel);
+    bool showHistogram(const Channel& pChannel,int pStartHeight, int pEndHeight,int pStartWidth,int pEndWidth);
 
     /**
      * @brief Resizes the image.
@@ -169,7 +170,10 @@ private:
     bool toColor(const Channel& pChannel);
     void setImageMatrix(unsigned char* pImage,const int& pStartRow, const int& pEndRow, std::mutex& pMutex);
     void setUnsignedCharArray(unsigned char* pResult,const int& pStartRow, const int& pEndRow, std::mutex& pMutex);
+    // Checks start and end parameters. If they are out of range, fits them to image.
+    void fitParameters(int& pStartHeight, int& pEndHeight,int& pStartWidth,int& pEndWidth);
     std::mutex mMutex;
+    ContentWidget mWindow;
 
 };
 

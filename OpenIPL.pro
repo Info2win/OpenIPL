@@ -1,4 +1,3 @@
-CONFIG -= qt
 
 TEMPLATE = lib
 DEFINES += OPENIPL_LIBRARY
@@ -12,6 +11,9 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    charts/barwidget.cpp \
+    charts/splinewidget.cpp \
+    contentwidget.cpp \
     grayscale.cpp \
     image.cpp \
     jpeg.cpp \
@@ -24,6 +26,9 @@ SOURCES += \
 
 HEADERS += \
     OpenIPL_global.h \
+    charts/barwidget.h \
+    charts/splinewidget.h \
+    contentwidget.h \
     grayscale.h \
     image.h \
     jpeg.h \
@@ -41,3 +46,5 @@ unix {
     target.path = /usr/lib5
 }
 !isEmpty(target.path): INSTALLS += target
+
+QT += widgets charts
