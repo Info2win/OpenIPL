@@ -7,6 +7,7 @@
 
 // STL headers
 #include <iostream>
+#include "cmath"
 
 
 // STB headers
@@ -76,6 +77,100 @@ ipl::Image::~Image()
             }
         }
     }
+
+}
+
+std::unordered_map<unsigned int, int> ipl::Image::getFrequency(Channel pChannel)
+{
+    return getFrequency(pChannel,0,mHeight,0,mWidth);
+}
+
+std::unordered_map<unsigned int, int> ipl::Image::getFrequency(Channel pChannel,int pStartHeight,int pEndHeight,int pStartWidth,int pEndWidth)
+{
+    // If start and end parameters are out of range of the image, make them in range
+    if(pStartHeight > mHeight)
+    {
+        pStartHeight = mHeight;
+    }
+    if(pEndHeight > mHeight)
+    {
+        pEndHeight = mHeight;
+    }
+    if(pStartWidth > mWidth)
+    {
+        pStartWidth = mWidth;
+    }
+    if(pEndWidth > mWidth)
+    {
+        pEndWidth = mWidth;
+    }
+    if(pStartHeight < 0)
+    {
+        pStartHeight = 0;
+    }
+    if(pEndHeight < 0)
+    {
+        pEndHeight = 0;
+    }
+    if(pStartWidth < 0)
+    {
+        pStartWidth = 0;
+    }
+    if(pEndWidth < 0)
+    {
+        pEndWidth = 0;
+    }
+    std::unordered_map<unsigned int, int> frequency;
+    Pixel* currentPixel;
+    for(int height=pStartHeight; height< pEndHeight; ++height)
+    {
+        for(int width=pStartWidth; width< pEndWidth; ++width)
+        {
+            currentPixel = mImageMatrix[height][width];
+            switch (pChannel)
+            {
+            case Red:
+                    frequency[*(currentPixel->getR())]++;
+                    break;
+            case Green:
+                    frequency[*(currentPixel->getG())]++;
+                    break;
+            case Blue:
+                    frequency[*(currentPixel->getB())]++;
+                    break;
+            default:
+                    break;
+            }
+        }
+    }
+    return frequency;
+}
+
+bool ipl::Image::calcHistogram(const Channel &pChannel)
+{
+    try
+    {
+        // maps r values' to count of occuarence in the image
+        std::unordered_map<unsigned int,int> rCount;
+        std::unordered_map<unsigned int,int> gCount;
+        std::unordered_map<unsigned int,int> bCount;
+        Pixel* currentPixel;
+        for(int height=0; height< mHeight; ++height)
+        {
+            for(int width=0; width< mWidth; ++width)
+            {
+                currentPixel = mImageMatrix[height][width];
+                rCount[(unsigned int)(*(currentPixel->getR()))]++;
+            }
+        }
+
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Exception caught: " << e.what() << std::endl;
+        return false;
+    }
+    return true;
 
 }
 

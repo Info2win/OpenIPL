@@ -10,6 +10,7 @@
 #include <string>
 #include <thread>
 #include <mutex>
+#include "unordered_map"
 
 namespace ipl{
 
@@ -41,6 +42,34 @@ public:
 
     //destructor
     virtual ~Image();
+    /**
+     * @brief Calculates how many times a pixel value occured in the image for a given channel
+     * @param pChannel is the channel to calculate frequency for
+     * @return Returns an unordered map of pixel values(0-255) mapped to their frequency
+     */
+    std::unordered_map<unsigned int,int> getFrequency(Channel pChannel);
+
+    /**
+     * @brief Calculates how many times a pixel value occured in the given range of the image for a given channel
+     * @param pChannel is the channel to calculate frequency for
+     * @param pStartHeight is height of the start pixel,
+     *  if negative converted to 0,
+     *  if larger than height converted to height
+     * @param pEndHeight is height of the end pixel,
+     * if negative converted to 0,
+     * if larger than height converted to height
+     * @param pStartWidth is width of the start pixel,
+     * if negative converted to 0,
+     * if larger than width converted to width
+     * @param pEndWidth is width of the end pixel,
+     * if negative converted to 0,
+     * if larger than width converted to width
+     * @return Returns an unordered map of pixel values(0-255) mapped to their frequency
+     */
+    std::unordered_map<unsigned int,int> getFrequency(Channel pChannel,int pStartHeight,int pEndHeight,int pStartWidth,int pEndWidth);
+
+    bool calcHistogram(const Channel& pChannel);
+    bool calcHistogram(const Channel& pChannel, const int& pStartWidth, const int& pEndWidth, const int& pStartHeight, const int& pEndHeight);
 
     /**
      * @brief Resizes the image.
