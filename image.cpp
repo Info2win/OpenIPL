@@ -1,6 +1,7 @@
 #include "image.h"
 #include "png.h"
 #include "jpeg.h"
+#include "bmp.h"
 #include "rgba.h"
 #include "rgb.h"
 #include "grayscale.h"
@@ -924,6 +925,10 @@ ipl::Image *ipl::Image::read(const char* pAbsolutePath)
 
             return new Jpeg(pAbsolutePath);
 
+        }
+        else if (imageType == "bmp")
+        {
+            return new Bmp(pAbsolutePath);
         }
         else
         {

@@ -11,6 +11,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    bmp.cpp \
     charts/barwidget.cpp \
     charts/splinewidget.cpp \
     contentwidget.cpp \
@@ -26,6 +27,7 @@ SOURCES += \
 
 HEADERS += \
     OpenIPL_global.h \
+    bmp.h \
     charts/barwidget.h \
     charts/splinewidget.h \
     contentwidget.h \
