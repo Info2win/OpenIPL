@@ -48,7 +48,7 @@ public:
      * @param pChannel is the channel to calculate frequency for
      * @return Returns an unordered map of pixel values(0-255) mapped to their frequency
      */
-    std::unordered_map<unsigned int,int> getFrequency(Channel pChannel);
+    std::unordered_map<unsigned char,int> getFrequency(Channel pChannel);
 
     /**
      * @brief Calculates how many times a pixel value occured in the given range of the image for a given channel
@@ -67,10 +67,12 @@ public:
      * if larger than width converted to width
      * @return Returns an unordered map of pixel values(0-255) mapped to their frequency
      */
-    std::unordered_map<unsigned int,int> getFrequency(Channel pChannel,int pStartHeight,int pEndHeight,int pStartWidth,int pEndWidth);
+    std::unordered_map<unsigned char,int> getFrequency(Channel pChannel,int pStartHeight,int pEndHeight,int pStartWidth,int pEndWidth);
 
     bool showHistogram(const Channel& pChannel);
     bool showHistogram(const Channel& pChannel,int pStartHeight, int pEndHeight,int pStartWidth,int pEndWidth);
+    bool applyHistogramEqualization();
+    bool applyHistogramEqualization(int pStartHeight, int pEndHeight,int pStartWidth,int pEndWidth);
 
     /**
      * @brief Resizes the image.

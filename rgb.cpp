@@ -64,5 +64,50 @@ unsigned char* Rgb::getB()
 }
 
 
+void Rgb::setR(unsigned char *pR)
+{
+    if(*pR > 255)
+    {
+        *pR = 255;
+    }
+    else if (*pR < 0)
+    {
+        *pR = 0;
+    }
+    else
+    {
+        mR = *pR;
+    }
+}
 
+void Rgb::setG(unsigned char *pG)
+{
+    if(*pG > 255)
+    {
+        *pG = 255;
+    }
+    else if (*pG < 0)
+    {
+        *pG = 0;
+    }
+    else
+    {
+        mG = *pG;
+    }
+}
 
+void Rgb::setB(unsigned char *pB)
+{
+    if(*pB > 255)
+    {
+        *pB = 255;
+    }
+    else if (*pB < 0)
+    {
+        *pB = 0;
+    }
+    else
+    {
+        mB = *pB;
+    }
+}

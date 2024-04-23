@@ -4,9 +4,9 @@
 #include <QSplineSeries>
 #include <QValueAxis>
 
-SplineWidget::SplineWidget(std::unordered_map<unsigned int, int>* redFrequency ,
-                           std::unordered_map<unsigned int, int>* blueFrequency ,
-                           std::unordered_map<unsigned int, int>* greenFrequency ,
+SplineWidget::SplineWidget(std::unordered_map<unsigned char, int>* redFrequency ,
+                           std::unordered_map<unsigned char, int>* blueFrequency ,
+                           std::unordered_map<unsigned char, int>* greenFrequency ,
                            QWidget *parent)
     : ContentWidget(parent)
 {

@@ -32,6 +32,12 @@ public:
      * @return Returns a pointer to Instensity value of the pixel, if it is not GrayScale returns nullptr
      */
     virtual unsigned char* getIntensity();
+
+    virtual void setR(unsigned char* pR);
+    virtual void setG(unsigned char* pG);
+    virtual void setB(unsigned char* pB);
+    virtual void setA(unsigned char* pA);
+    virtual void setIntensity(unsigned char* pIntensity);
 };
 
 #endif // PIXEL_H

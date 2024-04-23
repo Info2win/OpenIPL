@@ -15,6 +15,12 @@ private:
     unsigned char mR;
     unsigned char mG;
     unsigned char mB;
+
+    // Pixel interface
+public:
+    void setR(unsigned char *pR) override;
+    void setG(unsigned char *pG) override;
+    void setB(unsigned char *pB) override;
 };
 
 #endif // RGB_H

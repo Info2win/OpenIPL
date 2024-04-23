@@ -14,6 +14,10 @@ public:
 private:
     unsigned char mIntensity;
 
+
+    // Pixel interface
+public:
+    void setIntensity(unsigned char *pIntensity) override;
 };
 
 #endif // GRAYSCALE_H

@@ -84,16 +84,16 @@ ipl::Image::~Image()
 
 }
 
-std::unordered_map<unsigned int, int> ipl::Image::getFrequency(Channel pChannel)
+std::unordered_map<unsigned char, int> ipl::Image::getFrequency(Channel pChannel)
 {
     return getFrequency(pChannel,0,mHeight,0,mWidth);
 }
 
-std::unordered_map<unsigned int, int> ipl::Image::getFrequency(Channel pChannel,int pStartHeight,int pEndHeight,int pStartWidth,int pEndWidth)
+std::unordered_map<unsigned char, int> ipl::Image::getFrequency(Channel pChannel,int pStartHeight,int pEndHeight,int pStartWidth,int pEndWidth)
 {
     fitParameters(pStartHeight,pEndHeight,pStartWidth,pEndWidth);
 
-    std::unordered_map<unsigned int, int> frequency;
+    std::unordered_map<unsigned char, int> frequency;
     Pixel* currentPixel=nullptr;
 
     for(int height=pStartHeight; height< pEndHeight; ++height)
@@ -136,9 +136,9 @@ bool ipl::Image::showHistogram(const Channel& pChannel,int pStartHeight, int pEn
 {
     fitParameters(pStartHeight,pEndHeight,pStartWidth,pEndWidth);
     ContentWidget* contentWidget = nullptr;
-    std::unordered_map<unsigned int,int> redFrequency;
-    std::unordered_map<unsigned int,int> blueFrequency;
-    std::unordered_map<unsigned int,int> greenFrequency;
+    std::unordered_map<unsigned char,int> redFrequency;
+    std::unordered_map<unsigned char,int> blueFrequency;
+    std::unordered_map<unsigned char,int> greenFrequency;
     switch (pChannel) {
     case RGB:
         {
@@ -152,7 +152,6 @@ bool ipl::Image::showHistogram(const Channel& pChannel,int pStartHeight, int pEn
         {
             redFrequency = getFrequency(Red, pStartHeight,  pEndHeight, pStartWidth, pEndWidth);
             contentWidget = new SplineWidget(&redFrequency);
-                //new BarWidget(&redFrequency);
             break;
         }
     case Blue:
@@ -171,6 +170,88 @@ bool ipl::Image::showHistogram(const Channel& pChannel,int pStartHeight, int pEn
         break;
     }
     contentWidget->show();
+    return true;
+}
+
+bool ipl::Image::applyHistogramEqualization()
+{
+    return applyHistogramEqualization(0,mHeight,0,mWidth);
+}
+
+bool ipl::Image::applyHistogramEqualization(int pStartHeight, int pEndHeight, int pStartWidth, int pEndWidth)
+{
+    try
+    {
+        fitParameters(pStartHeight,pEndHeight,pStartWidth,pEndWidth);
+
+        int pixelCount = (pEndHeight - pStartHeight) * (pEndWidth - pStartWidth);
+        switch (mChannelCount) {
+
+        case 1:
+            {
+                return false; // TODO: support GrayScale and Binary images
+                break;
+            }
+
+        case 3:// if RGB
+            {
+            // Calculate histogram
+            Pixel* currentPixel = nullptr;
+            auto rCountMap = getFrequency(Red,pStartHeight,pEndHeight,pStartWidth,pEndWidth);
+            auto gCountMap = getFrequency(Green,pStartHeight,pEndHeight,pStartWidth,pEndWidth);
+            auto bCountMap = getFrequency(Blue,pStartHeight,pEndHeight,pStartWidth,pEndWidth);
+
+
+            for(int height = pStartHeight; height <pEndHeight; ++height)
+            {
+                    for(int width = pStartWidth; width < pEndWidth; ++width)
+                    {
+                        currentPixel =  mImageMatrix[height][width];
+                        unsigned char* newRValue = new unsigned char;
+                        *newRValue = ((double)rCountMap[*currentPixel->getR()] / pixelCount * 255);
+                        for(int intensity = 0; intensity < *currentPixel->getR(); ++intensity )
+                        {
+                            *newRValue += ((double)rCountMap[intensity] / pixelCount * 255);
+                        }
+                        unsigned char* newGValue = new unsigned char;
+                        *newGValue = ((double)gCountMap[*currentPixel->getG()] / pixelCount * 255);
+
+                        for(int intensity = 0; intensity < *currentPixel->getG(); ++intensity )
+                        {
+                            *newGValue += ((double)gCountMap[intensity] / pixelCount * 255);
+                        }
+                        unsigned char* newBValue = new unsigned char;
+                        *newBValue = ((double)bCountMap[*currentPixel->getB()] / pixelCount * 255);
+
+                        for(int intensity = 0; intensity < *currentPixel->getB(); ++intensity )
+                        {
+                            *newBValue += ((double)bCountMap[intensity] / pixelCount * 255);
+                        }
+                        delete mImageMatrix[height][width];
+                        mImageMatrix[height][width] = new Rgb(*newRValue,*newGValue,*newBValue);
+
+                    }
+            }
+                break;
+            }
+
+        case 4:
+            {
+                return false; // TODO: support RGBA images
+                break;
+            }
+
+        default:
+            return false;
+            break;
+        }
+
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Exception caught: " << e.what() << std::endl;
+        return false;
+    }
     return true;
 }
 
