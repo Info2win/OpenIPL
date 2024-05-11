@@ -73,6 +73,7 @@ public:
     bool showHistogram(const Channel& pChannel,int pStartHeight, int pEndHeight,int pStartWidth,int pEndWidth);
     bool applyHistogramEqualization();
     bool applyHistogramEqualization(int pStartHeight, int pEndHeight,int pStartWidth,int pEndWidth);
+    bool applyGaussianBlur(int pKernelHeightint, int pKernelWidth, float pSigma);
 
     /**
      * @brief Resizes the image.

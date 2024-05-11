@@ -256,6 +256,80 @@ bool ipl::Image::applyHistogramEqualization(int pStartHeight, int pEndHeight, in
     return true;
 }
 
+bool ipl::Image::applyGaussianBlur(int pKernelHeight, int pKernelWidth, float pSigma)
+{
+    try
+    {
+        if(mChannelCount == 1) // if grayscale or binary
+        {
+            int tStartWidth = 0;
+            int tStartHeight = 0;
+            fitParameters(tStartWidth,pKernelWidth,tStartHeight,pKernelHeight);
+            if(pSigma <=0) // if pSigma is not positive compute it from kernel size
+            {
+                pSigma = pKernelHeight * pKernelWidth / (2.0f * std::sqrt(2.0f * std::log(2.0f)));
+            }
+            // Define Gaussian kernel
+            std::vector<std::vector<float>> tKernel(pKernelHeight, std::vector<float>(pKernelWidth, 0.0));
+
+            // Calculate Gaussian kernel values
+            float tKernelSum = 0.0;
+            float tMean = pKernelWidth / 2;
+            for (int y = 0; y < pKernelHeight; ++y) {
+                    for (int x = 0; x < pKernelWidth; ++x) {
+                        tKernel[y][x] = std::exp(-0.5 * (std::pow((y - tMean) / pSigma, 2.0) + std::pow((x - tMean) / pSigma, 2.0)))
+                                        / (2 * M_PI * pSigma * pSigma);
+                        tKernelSum += tKernel[y][x];
+                    }
+            }
+
+            // Normalize kernel
+            for (int y = 0; y < pKernelHeight; ++y) {
+                    for (int x = 0; x < pKernelWidth; ++x) {
+                        tKernel[y][x] /= tKernelSum;
+                    }
+            }
+
+            // Convolve the image with the Gaussian kernel
+            std::vector<std::vector<Pixel*>> tTempImage = mImageMatrix;
+            for (int y = 1; y < mHeight - 1; ++y)
+            {
+                    for (int x = 1; x < mWidth - 1; ++x)
+                    {
+                        unsigned char tSum = '0';
+                        unsigned char tLatestGoodPixel='0';
+                        for (int i = -pKernelHeight/2; i <= pKernelHeight/2; ++i)
+                        {
+                            for (int j = -pKernelWidth/2; j <= pKernelWidth/2; ++j)
+                            {
+                                int ty = y + i;
+                                int tx = x + j;
+                                if (ty >= 0 && ty < mHeight && tx >= 0 && tx < mWidth)
+                                {
+                                    tSum += *tTempImage[y + i][x + j]->getIntensity() * tKernel[i + pKernelHeight/2][j + pKernelWidth/2];
+                                    if(tSum < 225 && tSum > 25) // if output pixel is too dark or bright ignore
+                                    {
+                                        tLatestGoodPixel = tSum;
+                                    }
+                                }
+
+                            }
+                        }
+                            mImageMatrix[y][x]->setIntensity(&tLatestGoodPixel);
+
+
+                    }
+            }
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Exception caught: " << e.what() << std::endl;
+        return false;
+    }
+    return true;
+}
+
 
 
 bool ipl::Image::resize(const int& pNewWidth, const int& pNewHeight)
